@@ -1,4 +1,3 @@
----START OF DOCKERFILE---
 # Stage 1: Build with JDK
 FROM eclipse-temurin:21.0.2_13-jdk-alpine AS builder
 WORKDIR /app
@@ -18,4 +17,3 @@ RUN apk add --no-cache bash
  
 EXPOSE 8092
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=docker", "/app/app.jar"]
----END OF DOCKERFILE---
