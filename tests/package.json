@@ -1,0 +1,15 @@
+{
+  "name": "core-banking-service-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test":            "playwright test --config=playwright.config.ts",
+    "test:journey":    "playwright test --config=playwright.config.ts --project=user-journey",
+    "test:contract":   "playwright test --config=playwright.config.ts --project=api-contract",
+    "test:regression": "playwright test --config=playwright.config.ts --project=regression",
+    "test:integration":"playwright test --config=playwright.config.ts --project=integration"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "typescript": "^5.4.0"
+  }
+}
