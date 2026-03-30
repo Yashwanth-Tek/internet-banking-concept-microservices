@@ -26,11 +26,11 @@ spec:
             - name: SERVER_PORT
               value: "8092"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql_javatodev_app:3306/core_banking_service_db"
+              value: "jdbc:mysql://mysql-javatodev-app:3306/banking_core_service"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "root"
+              value: "javatodev_development"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "root"
+              value: "oPItyPticIAt"
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
           readinessProbe:
