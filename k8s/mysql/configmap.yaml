@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql-initdb
-  namespace: test-qa
+  namespace: banking-dev
 data:
   init.sql: |
     CREATE USER IF NOT EXISTS 'javatodev_development'@'%' IDENTIFIED BY 'oPItyPticIAt';

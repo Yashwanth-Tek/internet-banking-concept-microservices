@@ -2,7 +2,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: core-banking-service-pdb
-  namespace: test-qa
+  namespace: banking-dev
   annotations:
     harness.io/direct-apply: "true"
 spec:

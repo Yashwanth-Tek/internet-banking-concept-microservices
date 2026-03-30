@@ -2,7 +2,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: core-banking-service-hpa
-  namespace: test-qa
+  namespace: banking-dev
   annotations:
     harness.io/direct-apply: "true"
 spec:

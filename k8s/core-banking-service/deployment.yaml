@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: core-banking-service
-  namespace: test-qa
+  namespace: banking-dev
   labels:
     app: core-banking-service
 spec:
