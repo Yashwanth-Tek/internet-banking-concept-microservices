@@ -6,7 +6,7 @@ metadata:
   labels:
     app: core-banking-service
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -37,14 +37,18 @@ spec:
             httpGet:
               path: /actuator/health/readiness
               port: 8092
-            initialDelaySeconds: 20
+            initialDelaySeconds: 60
             periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8092
-            initialDelaySeconds: 30
+            initialDelaySeconds: 90
             periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 5
           resources:
             requests:
               cpu: "200m"
