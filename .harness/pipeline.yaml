@@ -141,16 +141,19 @@ pipeline:
                       name: User Journey Tests
                       identifier: user_journey_tests
                       type: Container
-                      timeout: 5m
+                      timeout: 10m
                       spec:
-                        connectorRef: hrnslcl
+                        connectorRef: HarnessDocker
                         image: mcr.microsoft.com/playwright:v1.44.0-jammy
                         shell: Sh
                         command: |-
-                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
-                          cd /tmp/repo/tests
-                          npm ci
-                          npx playwright test --config=playwright.config.ts --project=user-journey
+                          apt-get install -y git > /dev/null 2>&1 || true
+                          git clone --depth=1 https://github.com/Yashwanth-Tek/internet-banking-concept-microservices.git /app
+                          cd /app/tests
+                          npm install
+                          npx playwright install chromium
+                          mkdir -p test-results
+                          PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/user-journey.xml npx playwright test --config=playwright.config.ts --project=user-journey --reporter=junit
                         envVariables:
                           BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
                           CI: "true"
@@ -162,21 +165,41 @@ pipeline:
                           type: KubernetesDirect
                           spec:
                             connectorRef: hrnslcl
-                            namespace: banking-dev
+                            namespace: harness-delegate-ng
+                            resources:
+                              limits:
+                                cpu: "1"
+                                memory: 1Gi
+                            annotations: {}
+                            labels: {}
+                            containerSecurityContext:
+                              capabilities:
+                                drop: []
+                                add: []
+                            nodeSelector: {}
+                        reports:
+                          type: JUnit
+                          spec:
+                            paths:
+                              - /app/tests/test-results/user-journey.xml
+                        outputVariables: []
                   - step:
                       name: Regression Tests
                       identifier: regression_tests
                       type: Container
-                      timeout: 5m
+                      timeout: 10m
                       spec:
-                        connectorRef: hrnslcl
+                        connectorRef: HarnessDocker
                         image: mcr.microsoft.com/playwright:v1.44.0-jammy
                         shell: Sh
                         command: |-
-                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
-                          cd /tmp/repo/tests
-                          npm ci
-                          npx playwright test --config=playwright.config.ts --project=regression
+                          apt-get install -y git > /dev/null 2>&1 || true
+                          git clone --depth=1 https://github.com/Yashwanth-Tek/internet-banking-concept-microservices.git /app
+                          cd /app/tests
+                          npm install
+                          npx playwright install chromium
+                          mkdir -p test-results
+                          PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/regression.xml npx playwright test --config=playwright.config.ts --project=regression --reporter=junit
                         envVariables:
                           BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
                           CI: "true"
@@ -188,21 +211,41 @@ pipeline:
                           type: KubernetesDirect
                           spec:
                             connectorRef: hrnslcl
-                            namespace: banking-dev
+                            namespace: harness-delegate-ng
+                            resources:
+                              limits:
+                                cpu: "1"
+                                memory: 1Gi
+                            annotations: {}
+                            labels: {}
+                            containerSecurityContext:
+                              capabilities:
+                                drop: []
+                                add: []
+                            nodeSelector: {}
+                        reports:
+                          type: JUnit
+                          spec:
+                            paths:
+                              - /app/tests/test-results/regression.xml
+                        outputVariables: []
                   - step:
                       name: Integration Tests
                       identifier: integration_tests
                       type: Container
-                      timeout: 5m
+                      timeout: 10m
                       spec:
-                        connectorRef: hrnslcl
+                        connectorRef: HarnessDocker
                         image: mcr.microsoft.com/playwright:v1.44.0-jammy
                         shell: Sh
                         command: |-
-                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
-                          cd /tmp/repo/tests
-                          npm ci
-                          npx playwright test --config=playwright.config.ts --project=integration
+                          apt-get install -y git > /dev/null 2>&1 || true
+                          git clone --depth=1 https://github.com/Yashwanth-Tek/internet-banking-concept-microservices.git /app
+                          cd /app/tests
+                          npm install
+                          npx playwright install chromium
+                          mkdir -p test-results
+                          PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/integration.xml npx playwright test --config=playwright.config.ts --project=integration --reporter=junit
                         envVariables:
                           BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
                           CI: "true"
@@ -214,21 +257,41 @@ pipeline:
                           type: KubernetesDirect
                           spec:
                             connectorRef: hrnslcl
-                            namespace: banking-dev
+                            namespace: harness-delegate-ng
+                            resources:
+                              limits:
+                                cpu: "1"
+                                memory: 1Gi
+                            annotations: {}
+                            labels: {}
+                            containerSecurityContext:
+                              capabilities:
+                                drop: []
+                                add: []
+                            nodeSelector: {}
+                        reports:
+                          type: JUnit
+                          spec:
+                            paths:
+                              - /app/tests/test-results/integration.xml
+                        outputVariables: []
                   - step:
                       name: API Contract Tests
                       identifier: api_contract_tests
                       type: Container
-                      timeout: 5m
+                      timeout: 10m
                       spec:
-                        connectorRef: hrnslcl
+                        connectorRef: HarnessDocker
                         image: mcr.microsoft.com/playwright:v1.44.0-jammy
                         shell: Sh
                         command: |-
-                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
-                          cd /tmp/repo/tests
-                          npm ci
-                          npx playwright test --config=playwright.config.ts --project=api-contract
+                          apt-get install -y git > /dev/null 2>&1 || true
+                          git clone --depth=1 https://github.com/Yashwanth-Tek/internet-banking-concept-microservices.git /app
+                          cd /app/tests
+                          npm install
+                          npx playwright install chromium
+                          mkdir -p test-results
+                          PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/api-contract.xml npx playwright test --config=playwright.config.ts --project=api-contract --reporter=junit
                         envVariables:
                           BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
                           CI: "true"
@@ -240,7 +303,24 @@ pipeline:
                           type: KubernetesDirect
                           spec:
                             connectorRef: hrnslcl
-                            namespace: banking-dev
+                            namespace: harness-delegate-ng
+                            resources:
+                              limits:
+                                cpu: "1"
+                                memory: 1Gi
+                            annotations: {}
+                            labels: {}
+                            containerSecurityContext:
+                              capabilities:
+                                drop: []
+                                add: []
+                            nodeSelector: {}
+                        reports:
+                          type: JUnit
+                          spec:
+                            paths:
+                              - /app/tests/test-results/api-contract.xml
+                        outputVariables: []
               - step:
                   name: Swap primary with stage service
                   identifier: bgSwapServices
@@ -248,6 +328,13 @@ pipeline:
                   timeout: 5m
                   spec:
                     skipDryRun: false
+              - step:
+                  type: K8sBlueGreenStageScaleDown
+                  name: Blue Scale Down
+                  identifier: Blue_Scale_Down
+                  spec:
+                    deleteResources: false
+                  timeout: 10m
             rollbackSteps:
               - step:
                   name: Swap primary with stage service
