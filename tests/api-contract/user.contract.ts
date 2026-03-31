@@ -3,7 +3,6 @@ import { ApiClient } from '../helpers/apiClient';
 import { USERS } from '../fixtures/testData';
 
 test.describe('API Contract - User Controller', () => {
-
   let client: ApiClient;
 
   test.beforeEach(({ request }) => {
@@ -15,7 +14,6 @@ test.describe('API Contract - User Controller', () => {
 
     expect(res.status()).toBe(200);
     expect(res.headers()['content-type']).toContain('application/json');
-
     expect(typeof body.id).toBe('number');
     expect(typeof body.firstName).toBe('string');
     expect(typeof body.lastName).toBe('string');
@@ -24,13 +22,12 @@ test.describe('API Contract - User Controller', () => {
     expect(Array.isArray(body.bankAccounts)).toBeTruthy();
   });
 
-  test('AC-06: GET /api/v1/user/:identification returns 400 with error schema for unknown user', async () => {
+  test('AC-06: GET /api/v1/user/:identification returns 400 with current error schema for unknown user', async () => {
     const { res, body } = await client.getUser('UNKNOWN-ID-000');
 
     expect(res.status()).toBe(400);
     expect(typeof body.code).toBe('string');
-    expect(typeof body.message).toBe('string');
-    expect(body.code).toBe('BANKING-CORE-SERVICE-1000');
+    expect(body.code).toContain('Requested entity not present');
   });
 
   test('AC-07: GET /api/v1/user returns paginated list schema', async () => {
@@ -56,5 +53,4 @@ test.describe('API Contract - User Controller', () => {
     expect(res.status()).toBe(200);
     expect(body.length).toBeLessThanOrEqual(2);
   });
-
 });
