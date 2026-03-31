@@ -1,0 +1,265 @@
+pipeline:
+  name: internet-banking core-banking-service
+  identifier: internetbanking
+  projectIdentifier: BY_Project
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: YashwanthTek
+        repoName: internet-banking-concept-microservices
+        build: <+input>
+  stages:
+    - stage:
+        name: Build and Security Scan
+        identifier: Build_Security_Push
+        description: Gradle build -> Semgrep SAST -> OWASP -> Docker push
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          buildIntelligence:
+            enabled: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: hrnslcl
+              namespace: harness-delegate-ng
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Gradle Build
+                  identifier: gradle_build
+                  spec:
+                    connectorRef: HarnessDocker
+                    image: eclipse-temurin:21.0.2_13-jdk-alpine
+                    shell: Sh
+                    command: |-
+                      set -e
+                      cd core-banking-service
+                      chmod +x gradlew
+                      ./gradlew clean build -x test
+                    resources:
+                      limits:
+                        memory: 2Gi
+                        cpu: 1000m
+              - parallel:
+                  - step:
+                      type: Semgrep
+                      name: Semgrep_1
+                      identifier: Semgrep_1
+                      spec:
+                        mode: orchestration
+                        config: default
+                        target:
+                          type: repository
+                          detection: auto
+                        advanced:
+                          log:
+                            level: info
+                          fail_on_severity: high
+                        resources:
+                          limits:
+                            memory: 1Gi
+                            cpu: 500m
+                  - step:
+                      type: Owasp
+                      name: Owasp Dependency-Check Scan
+                      identifier: Owasp_DependencyCheck_Scan
+                      spec:
+                        mode: orchestration
+                        config: default
+                        target:
+                          type: repository
+                          detection: auto
+                        advanced:
+                          log:
+                            level: info
+                          fail_on_severity: high
+                          args:
+                            cli: "--disableOssIndex"
+                        resources:
+                          limits:
+                            memory: 4Gi
+                            cpu: 2000m
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: Build and Push Docker Image
+                  identifier: docker_build_push
+                  spec:
+                    connectorRef: HarnessDocker
+                    repo: yashwanth536/core-banking-service
+                    tags:
+                      - <+codebase.branch>
+                      - <+codebase.commitSha>
+                      - <+pipeline.sequenceId>
+                    caching: true
+                    dockerfile: core-banking-service/Dockerfile
+                    context: .
+    - stage:
+        name: Blue-Green Deployment
+        identifier: BlueGreen_Deployment
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: testqa1
+            serviceInputs:
+              serviceDefinition:
+                type: Kubernetes
+                spec:
+                  artifacts:
+                    primary:
+                      primaryArtifactRef: <+input>
+                      sources: <+input>
+          environment:
+            environmentRef: bankingdev
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: bankingdev
+          execution:
+            steps:
+              - step:
+                  name: Stage Deployment
+                  identifier: stageDeployment
+                  type: K8sBlueGreenDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+                    skipUnchangedManifest: false
+              - parallel:
+                  - step:
+                      name: User Journey Tests
+                      identifier: user_journey_tests
+                      type: Container
+                      timeout: 5m
+                      spec:
+                        connectorRef: hrnslcl
+                        image: mcr.microsoft.com/playwright:v1.44.0-jammy
+                        shell: Sh
+                        command: |-
+                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
+                          cd /tmp/repo/tests
+                          npm ci
+                          npx playwright test --config=playwright.config.ts --project=user-journey
+                        envVariables:
+                          BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
+                          CI: "true"
+                        resources:
+                          limits:
+                            memory: 1Gi
+                            cpu: 500m
+                        infrastructure:
+                          type: KubernetesDirect
+                          spec:
+                            connectorRef: hrnslcl
+                            namespace: banking-dev
+                  - step:
+                      name: Regression Tests
+                      identifier: regression_tests
+                      type: Container
+                      timeout: 5m
+                      spec:
+                        connectorRef: hrnslcl
+                        image: mcr.microsoft.com/playwright:v1.44.0-jammy
+                        shell: Sh
+                        command: |-
+                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
+                          cd /tmp/repo/tests
+                          npm ci
+                          npx playwright test --config=playwright.config.ts --project=regression
+                        envVariables:
+                          BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
+                          CI: "true"
+                        resources:
+                          limits:
+                            memory: 1Gi
+                            cpu: 500m
+                        infrastructure:
+                          type: KubernetesDirect
+                          spec:
+                            connectorRef: hrnslcl
+                            namespace: banking-dev
+                  - step:
+                      name: Integration Tests
+                      identifier: integration_tests
+                      type: Container
+                      timeout: 5m
+                      spec:
+                        connectorRef: hrnslcl
+                        image: mcr.microsoft.com/playwright:v1.44.0-jammy
+                        shell: Sh
+                        command: |-
+                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
+                          cd /tmp/repo/tests
+                          npm ci
+                          npx playwright test --config=playwright.config.ts --project=integration
+                        envVariables:
+                          BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
+                          CI: "true"
+                        resources:
+                          limits:
+                            memory: 1Gi
+                            cpu: 500m
+                        infrastructure:
+                          type: KubernetesDirect
+                          spec:
+                            connectorRef: hrnslcl
+                            namespace: banking-dev
+                  - step:
+                      name: API Contract Tests
+                      identifier: api_contract_tests
+                      type: Container
+                      timeout: 5m
+                      spec:
+                        connectorRef: hrnslcl
+                        image: mcr.microsoft.com/playwright:v1.44.0-jammy
+                        shell: Sh
+                        command: |-
+                          git clone --depth=1 https://github.com/YashwanthTek/internet-banking-concept-microservices.git /tmp/repo
+                          cd /tmp/repo/tests
+                          npm ci
+                          npx playwright test --config=playwright.config.ts --project=api-contract
+                        envVariables:
+                          BASE_URL: http://core-banking-service-svc-stage.banking-dev.svc.cluster.local
+                          CI: "true"
+                        resources:
+                          limits:
+                            memory: 1Gi
+                            cpu: 500m
+                        infrastructure:
+                          type: KubernetesDirect
+                          spec:
+                            connectorRef: hrnslcl
+                            namespace: banking-dev
+              - step:
+                  name: Swap primary with stage service
+                  identifier: bgSwapServices
+                  type: K8sBGSwapServices
+                  timeout: 5m
+                  spec:
+                    skipDryRun: false
+            rollbackSteps:
+              - step:
+                  name: Swap primary with stage service
+                  identifier: rollbackBgSwapServices
+                  type: K8sBGSwapServices
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
