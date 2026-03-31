@@ -9,7 +9,7 @@
     "test:integration":"playwright test --config=playwright.config.ts --project=integration"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
+    "@playwright/test": "1.44.0",
     "typescript": "^5.4.0",
     "ts-node": "^10.9.2"
   }
