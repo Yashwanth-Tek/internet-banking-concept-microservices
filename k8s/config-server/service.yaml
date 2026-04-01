@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: internet-banking-config-server-svc
+  namespace: banking-dev
+  annotations:
+    harness.io/primary-service: "true"
+  labels:
+    app: internet-banking-config-server
+spec:
+  type: ClusterIP
+  selector:
+    app: internet-banking-config-server
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8090
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: internet-banking-config-server-svc-stage
+  namespace: banking-dev
+  annotations:
+    harness.io/stage-service: "true"
+  labels:
+    app: internet-banking-config-server
+spec:
+  type: ClusterIP
+  selector:
+    app: internet-banking-config-server
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8090
