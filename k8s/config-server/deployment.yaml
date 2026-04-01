@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: internet-banking-config-server
+  namespace: banking-dev
+  labels:
+    app: internet-banking-config-server
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: internet-banking-config-server
+  template:
+    metadata:
+      labels:
+        app: internet-banking-config-server
+    spec:
+      containers:
+        - name: internet-banking-config-server
+          image: yashwanth536/cofig-service:5
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8090
+          env:
+            - name: SERVER_PORT
+              value: "8090"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-javatodev-app:3306/internet-banking-config-server"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "javatodev_development"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "oPItyPticIAt"
+            - name: SPRING_CLOUD_CONFIG_ENABLED
+              value: "false"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8090
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8090
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
