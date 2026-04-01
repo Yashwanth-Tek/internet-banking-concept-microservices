@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: internet-banking-config-server
-          image: yashwanth536/cofig-service:1
+          image: yashwanth536/config-service:1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8090
@@ -33,21 +33,35 @@ spec:
               value: "oPItyPticIAt"
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
+            - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+              value: "true"
+            - name: MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED
+              value: "true"
+            - name: MANAGEMENT_HEALTH_READINESSSTATE_ENABLED
+              value: "true"
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "health,info"
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8090
+            failureThreshold: 30
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8090
-            initialDelaySeconds: 60
+            initialDelaySeconds: 20
             periodSeconds: 10
-            timeoutSeconds: 2
+            timeoutSeconds: 3
             failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8090
-            initialDelaySeconds: 90
+            initialDelaySeconds: 40
             periodSeconds: 15
-            timeoutSeconds: 2
+            timeoutSeconds: 3
             failureThreshold: 5
           resources:
             requests:
