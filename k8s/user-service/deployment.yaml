@@ -7,6 +7,7 @@ metadata:
     app: user-service
 spec:
   replicas: 1
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: user-service
@@ -18,47 +19,48 @@ spec:
       containers:
         - name: user-service
           image: yashwanth536/user-service:7
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8083
-
           env:
             - name: SERVER_PORT
               value: "8083"
-
-            - name: SPRING_PROFILES_ACTIVE
-              value: "docker"
-
-            - name: SPRING_CLOUD_CONFIG_ENABLED
-              value: "false"
-
-            - name: EUREKA_CLIENT_ENABLED
-              value: "false"
-
-            - name: SPRING_CLOUD_DISCOVERY_ENABLED
-              value: "false"
-
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql-javatodev-app:3306/banking_user_service"
-
             - name: SPRING_DATASOURCE_USERNAME
               value: "javatodev_development"
-
             - name: SPRING_DATASOURCE_PASSWORD
               value: "oPItyPticIAt"
-
             - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
               value: "com.mysql.cj.jdbc.Driver"
-
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_CLOUD_CONFIG_ENABLED
+              value: "false"
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+            - name: SPRING_CLOUD_DISCOVERY_ENABLED
+              value: "false"
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8083
             initialDelaySeconds: 60
             periodSeconds: 10
-
+            timeoutSeconds: 2
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8083
             initialDelaySeconds: 90
             periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
