@@ -15,5 +15,5 @@ COPY --from=builder /app/internet-banking-fund-transfer-service/wait-for-it.sh w
 RUN chmod +x wait-for-it.sh
 RUN apk add --no-cache bash
  
-EXPOSE 8092
+EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=docker", "/app/app.jar"]
