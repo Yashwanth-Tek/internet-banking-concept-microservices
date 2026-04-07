@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fund-transfer-service
+  namespace: banking-dev
+  labels:
+    app: fund-transfer-service
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: fund-transfer-service
+  template:
+    metadata:
+      labels:
+        app: fund-transfer-service
+    spec:
+      containers:
+        - name: fund-transfer-service
+          image: yashwanth536/fund-transfer-service:<+artifacts.primary.tag>
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+
+          env:
+            - name: SERVER_PORT
+              value: "8084"
+
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-javatodev-app:3306/banking_core_fund_transfer_service"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "javatodev_development"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "oPItyPticIAt"
+
+            - name: SPRING_CLOUD_CONFIG_ENABLED
+              value: "false"
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8084
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8084
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
