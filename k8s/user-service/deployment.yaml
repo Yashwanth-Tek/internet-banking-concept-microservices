@@ -19,6 +19,9 @@ spec:
       containers:
         - name: user-service
           image: yashwanth536/user-service:7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
           env:
             - name: SERVER_PORT
               value: "8083"
@@ -32,7 +35,12 @@ spec:
               value: "com.mysql.cj.jdbc.Driver"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
-            
+            - name: SPRING_CLOUD_CONFIG_ENABLED
+              value: "false"
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+            - name: SPRING_CLOUD_DISCOVERY_ENABLED
+              value: "false"
             - name: APP_CONFIG_KEYCLOAK_SERVER_URL
               value: "http://keycloak-service:8080"
             - name: APP_CONFIG_KEYCLOAK_REALM
