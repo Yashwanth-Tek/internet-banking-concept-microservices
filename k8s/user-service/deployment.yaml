@@ -41,13 +41,14 @@ spec:
               value: "false"
             - name: SPRING_CLOUD_DISCOVERY_ENABLED
               value: "false"
-            - name: APP_CONFIG_KEYCLOAK_SERVER_URL
-              value: "http://keycloak-service:8080"
-            - name: APP_CONFIG_KEYCLOAK_REALM
-              value: "banking"
-            - name: APP_CONFIG_KEYCLOAK_CLIENT_ID
-              value: "user-service"
-            - name: APP_CONFIG_KEYCLOAK_CLIENT_SECRET
+            - name: SPRING_APPLICATION_JSON
+              value: >-
+                {
+                  "app.config.keycloak.serverUrl": "http://keycloak-service:8080",
+                  "app.config.keycloak.realm": "banking",
+                  "app.config.keycloak.clientId": "user-service"
+                }
+            - name: app.config.keycloak.clientSecret
               valueFrom:
                 secretKeyRef:
                   name: keycloak-credentials
