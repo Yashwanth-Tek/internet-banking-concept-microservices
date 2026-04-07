@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: fund-transfer-service
-          image: yashwanth536/fund-transfer-service:<+artifacts.primary.tag>
+          image: yashwanth536/fund-transfer-service:4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8084
