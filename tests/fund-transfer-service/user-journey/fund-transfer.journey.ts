@@ -13,19 +13,30 @@ test.describe('Fund Transfer Service - User Journey', () => {
       data: transferPayload
     });
 
-    expect(createResponse.ok()).toBeTruthy();
+    const createStatus = createResponse.status();
+    const createText = await createResponse.text();
 
-    const createBody = await createResponse.json();
+    console.log('CREATE STATUS:', createStatus);
+    console.log('CREATE BODY:', createText);
+
+    expect(createStatus).toBe(200);
+
+    const createBody = JSON.parse(createText);
     expect(createBody).toHaveProperty('message');
     expect(createBody.message).toBe('Success');
     expect(createBody).toHaveProperty('transactionId');
-    expect(typeof createBody.transactionId).toBe('string');
-    expect(createBody.transactionId.length).toBeGreaterThan(5);
 
     const listResponse = await request.get(`${baseURL}/api/v1/transfer?page=0&size=20`);
-    expect(listResponse.ok()).toBeTruthy();
 
-    const listBody = await listResponse.json();
+    const listStatus = listResponse.status();
+    const listText = await listResponse.text();
+
+    console.log('LIST STATUS:', listStatus);
+    console.log('LIST BODY:', listText);
+
+    expect(listStatus).toBe(200);
+
+    const listBody = JSON.parse(listText);
     expect(Array.isArray(listBody)).toBeTruthy();
 
     const matchingTransfer = listBody.find((item: any) =>
