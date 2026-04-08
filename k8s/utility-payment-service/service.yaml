@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: utility-payment-service-svc
+  namespace: banking-dev
+  annotations:
+    harness.io/primary-service: "true"
+  labels:
+    app: utility-payment-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8084
+      protocol: TCP
+  selector:
+    app: utility-payment-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: utility-payment-service-svc-stage
+  namespace: banking-dev
+  annotations:
+    harness.io/stage-service: "true"
+  labels:
+    app: utility-payment-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8084
+      protocol: TCP
+  selector:
+    app: utility-payment-service
