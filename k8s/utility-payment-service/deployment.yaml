@@ -29,6 +29,8 @@ spec:
               value: "docker"
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
+            - name: SPRING_AUTOCONFIGURE_EXCLUDE
+              value: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
           readinessProbe:
             httpGet:
               path: /actuator/health
