@@ -29,8 +29,14 @@ spec:
               value: "docker"
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
-            - name: SPRING_AUTOCONFIGURE_EXCLUDE
-              value: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-javatodev-app:3306/banking_utility_payment_service"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "javatodev_development"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "oPItyPticIAt"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
           readinessProbe:
             httpGet:
               path: /actuator/health
