@@ -83,11 +83,11 @@ export default defineConfig({
 
     {
       name: 'utility-payment-service-user-journey',
-      testDir: './utility-payment-service/user-journey',
+      testDir: './utility-payment-service/journey',
     },
     {
       name: 'utility-payment-service-api-contract',
-      testDir: './utility-payment-service/api-contract',
+      testDir: './utility-payment-service/contract',
     },
     {
       name: 'utility-payment-service-regression',
