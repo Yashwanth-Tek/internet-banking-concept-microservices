@@ -31,20 +31,20 @@ spec:
               value: "false"
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
-              port: 8084
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
+              path: /actuator/health
               port: 8084
             initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 8
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            initialDelaySeconds: 90
             periodSeconds: 20
             timeoutSeconds: 5
-            failureThreshold: 6
+            failureThreshold: 8
           resources:
             requests:
               cpu: "250m"
