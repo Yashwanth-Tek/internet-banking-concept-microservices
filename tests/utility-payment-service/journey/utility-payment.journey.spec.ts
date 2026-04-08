@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('basic utility payment journey smoke test', async ({ request }) => {
-  const health = await request.get(`${process.env.BASE_URL}/actuator/health`);
-  expect(health.ok()).toBeTruthy();
+test('utility payment user journey health check', async ({ request }) => {
+  const response = await request.get(`${process.env.BASE_URL}/actuator/health`);
+  expect(response.status()).toBe(200);
 
-  const body = await health.json();
+  const body = await response.json();
   expect(body.status).toBe('UP');
 });
