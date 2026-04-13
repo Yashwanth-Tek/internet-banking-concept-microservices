@@ -11,42 +11,33 @@ metadata:
   namespace: banking-dev
   labels:
     app: core-banking-service
-
 spec:
   replicas: 1
   revisionHistoryLimit: 2
-
+  progressDeadlineSeconds: 600
   selector:
     matchLabels:
       app: core-banking-service
-
   template:
     metadata:
       labels:
         app: core-banking-service
-
     spec:
       containers:
         - name: core-banking-service
           image: yashwanth536/core-banking-service:5
           imagePullPolicy: IfNotPresent
-
           ports:
             - containerPort: 8092
-
           env:
             - name: SERVER_PORT
               value: "8092"
-
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql-javatodev-app:3306/banking_core_service"
-
             - name: SPRING_DATASOURCE_USERNAME
               value: "javatodev_development"
-
             - name: SPRING_DATASOURCE_PASSWORD
               value: "oPItyPticIAt"
-
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
 
@@ -54,34 +45,33 @@ spec:
             httpGet:
               path: /actuator/health/liveness
               port: 8092
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 18
+            timeoutSeconds: 5
+            failureThreshold: 24
 
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8092
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 12
+            timeoutSeconds: 5
+            failureThreshold: 18
 
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8092
-            initialDelaySeconds: 120
+            initialDelaySeconds: 150
             periodSeconds: 15
-            timeoutSeconds: 2
+            timeoutSeconds: 5
             failureThreshold: 5
 
           resources:
             requests:
               cpu: "200m"
               memory: "512Mi"
-
             limits:
               cpu: "500m"
               memory: "768Mi"
