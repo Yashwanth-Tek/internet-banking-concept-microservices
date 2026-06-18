@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: core-banking-service
-          image: yashwanth536/core-banking-service:<+artifact.image>
+          image: yashwanth536/core-banking-service:5
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8092
